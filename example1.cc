@@ -1,7 +1,7 @@
 #include "GL/glut.h"
 #include "GL/glu.h"
 #include <glm/glm.hpp>
-
+double x=1, g_orientation = 45.0, l_orientation = 0.0, g_posX = 0, g_posY = 0, g_posZ = 0;
 struct matrix{
     double x1,x2,x3,x4,y1,y2,y3,y4,z1,z2,z3,z4,q1,q2,q3,q4;
 };
@@ -24,7 +24,7 @@ void init()
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(35,1.0f,0.0f,1000);
+    gluPerspective(120,1.0f,1.0f,100.0f);
     glMatrixMode(GL_MODELVIEW);
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.1,0.1,0.1,1);
@@ -71,19 +71,78 @@ void drawGrid(){
 }
 
 void display(){
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
 
+    
+    glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-   glTranslatef(-13,0,10);
-
-    glRotatef(40,1,1,0);//get angled perspective 
-   
+    
+    glRotatef(g_orientation, 0, 1.0, 0.0);
+    glRotatef(l_orientation, 1.0, 0, 0.0);
+    glTranslatef(-g_posX, -g_posY, -g_posZ);
+    
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
     drawGrid();
     theCube();//make cursor
-    glutSwapBuffers();
     
-}
+    //glRotatef(45,20,20,0);//get angled perspective 
+    //glLoadIdentity();
+    //glTranslatef(-1,0,-1.0);
 
+    
+   
+    
+    glutSwapBuffers();
+    glScalef(x, x, x);
+}
+void keyBoard(unsigned char key, int x, int y)
+{
+switch (key) {
+case 'q': // up
+g_posY = g_posY + 1.0;
+break;
+case 'e': // down
+g_posY = g_posY - 1.0;
+break;
+case 'a': // up
+g_posX = g_posX + 1.0;
+break;
+case 'd': // down
+g_posX = g_posX - 1.0;
+break;
+case 'w': // up
+g_posZ = g_posZ + 1.0;
+break;
+case 's': // down
+g_posZ = g_posZ - 1.0;
+break;
+case 'z': // left
+g_orientation = g_orientation - 15.0;
+break;
+case 'x': // right
+g_orientation = g_orientation + 15.0;
+break;
+case 'c': // down
+l_orientation = l_orientation - 15.0;
+break;
+case 'n': // up
+l_orientation = l_orientation + 15.0;
+break;
+case '+': // forwards
+x = x+0.1; 
+//g_posX = g_posX + sin(g_orientation / 180.0 * M_PI);
+//g_posZ = g_posZ - cos(g_orientation / 180.0 * M_PI);
+break;
+case '-': // backwards
+x = x-0.1;
+//g_posX = g_posX - sin(g_orientation / 180.0 * M_PI);
+//g_posZ = g_posZ + cos(g_orientation / 180.0 * M_PI);
+break;
+
+}
+glutPostRedisplay();
+}
 void ring()
 {
     triangle i;
@@ -108,23 +167,6 @@ void ring()
     makeRingSegment(rotateZ*seg);
 }
  
-    /*c.x1 = a.x1*b.x1+ a.x2*b.y1 + a.x3*b.z1 + a.x4*b.q1,
-    c.x2 = a.x1*b.x2+ a.x2*b.y2 + a.x3*b.z2 + a.x4*b.q2,
-    c.x3 =a.x1*b.x3+ a.x2*b.y3 + a.x3*b.z3 + a.x4*b.q3,
-    c.x4 = a.x1*b.x4+ a.x2*b.y4 + a.x3*b.z4 + a.x4*b.q4,
-    c.y1 = a.y1*b.x1+ a.y2*b.y1 + a.y3*b.z1 + a.y4*b.q1,
-    c.y2 = a.y1*b.x2+ a.y2*b.y2 + a.y3*b.z2 + a.y4*b.q2,
-    c.y3 = a.y1*b.x3+ a.y2*b.y3 + a.y3*b.z3 + a.y4*b.q3,
-    c.y4 = a.y1*b.x4+ a.y2*b.y4 + a.y3*b.z4 + a.y4*b.q4,
-    c.z1 = a.z1*b.x1+ a.z2*b.y1 + a.z3*b.z1 + a.z4*b.q1,
-    c.z2 = a.z1*b.x2+ a.z2*b.y2 + a.z3*b.z2 + a.z4*b.q2,
-    c.z3 = a.z1*b.x3+ a.z2*b.y3 + a.z3*b.z3 + a.z4*b.q3,
-    c.z4 = a.z1*b.x4+ a.z2*b.y4 + a.z3*b.z4 + a.z4*b.q4,
-    c.q1 = a.q1*b.x1+ a.q2*b.y1 + a.q3*b.z1 + a.q4*b.q1,
-    c.q2 = a.q1*b.x2+ a.q2*b.y2 + a.q3*b.z2 + a.q4*b.q2,
-    c.q3 = a.q1*b.x3+ a.q2*b.y3 + a.q3*b.z3 + a.q4*b.q3,
-    c.q4 = a.q1*b.x4+ a.q2*b.y4 + a.q3*b.z4 + a.q4*b.q4;*/
-
 
 
 
@@ -135,7 +177,9 @@ glutInit(&argc, argv);
 glutInitDisplayMode(GLUT_DOUBLE);
 glutInitWindowSize(800,600);
 glutCreateWindow("Triangle");
+
 glutDisplayFunc(&display);
+glutKeyboardFunc(&keyBoard);//(unsigned char key, int x, int y)
 glutMainLoop();
 return 0;
 }
